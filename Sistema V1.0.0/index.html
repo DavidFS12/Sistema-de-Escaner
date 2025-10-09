@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sistema Escáner Ferretería</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <!-- QuaggaJS CDN for barcode scanning -->
+    <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Sistema Escáner - Ferretería</h1>
+      <div class="controls">
+        <button id="scanBtn">Escanear código de barras</button>
+        <button id="registerBtn">Registrar código de barras</button>
+      </div>
+
+      <section id="scannerSection" class="hidden">
+        <h2>Escáner</h2>
+        <div id="scanner" class="scanner"></div>
+        <div id="scanResult" class="result"></div>
+        <button id="stopScanBtn" class="secondary">Detener escaneo</button>
+      </section>
+
+      <section id="registerSection" class="hidden">
+        <h2>Registrar Producto</h2>
+        <form id="registerForm">
+          <label>Código de barras<br><input id="barcodeInput" name="barcode" required inputmode="numeric" pattern="\d*" placeholder="Solo dígitos"></label>
+          <label>Nombre<br><input id="nameInput" name="name" required></label>
+          <label>Precio<br><input id="priceInput" name="price" type="number" step="0.01" required></label>
+
+          <div class="camera">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="photoCanvas" class="hidden"></canvas>
+            <button id="takePhotoBtn" type="button">Tomar foto</button>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit">Guardar</button>
+            <button id="cancelRegisterBtn" type="button" class="secondary">Cancelar</button>
+          </div>
+        </form>
+        <div id="registerMessage" class="result"></div>
+      </section>
+
+      <section id="listSection">
+        <h2>Productos guardados</h2>
+        <div class="controls">
+          <button id="listBtn">Listar productos</button>
+          <button id="clearListBtn" class="secondary">Vaciar lista (debug)</button>
+        </div>
+        <div id="productList" class="result"></div>
+      </section>
+    </main>
+
+    <script src="js/db.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

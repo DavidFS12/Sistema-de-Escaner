@@ -1,0 +1,83 @@
+:root {
+  --bg: #f7f7f9; 
+  --card: #fff; 
+  --accent: #0d6efd; 
+  --muted: #6c757d;
+}
+* {
+  box-sizing: border-box;
+  font-family: Inter, Segoe UI, Arial, Helvetica, sans-serif;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: #111;
+}
+.container {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 20px;
+  background: var(--card);
+  border-radius: 8px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .06);
+}
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+button {
+  background: var(--accent);
+  color: white;
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button.secondary {
+  background: #6c757d;
+}
+.hidden {
+  display: none;
+}
+.scanner {
+  width: 100%;
+  height: 360px;
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.result {
+  margin-top: 12px;
+  color: var(--muted);
+}
+form label {
+  display: block;
+  margin: 8px 0;
+}
+input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.camera {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+#video {
+  width: 320px;
+  height: 240px;
+  background: #000;
+  border-radius: 6px;
+}
+#photoCanvas {
+  display: none;
+}
+.form-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
