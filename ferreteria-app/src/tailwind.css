@@ -2,24 +2,6 @@
 @layer properties;
 @layer theme, base, components, utilities;
 
-@font-face {
-  font-family: 'SF Pro';
-  src: url('/fonts/SFPRODISPLAYREGULAR.otf') format('opentype');
-  font-weight: 400;
-}
-
-@font-face {
-  font-family: 'SF Pro';
-  src: url('/fonts/SFPRODISPLAYMEDIUM.otf') format('opentype');
-  font-weight: 500;
-}
-
-@font-face {
-  font-family: 'SF Pro';
-  src: url('/fonts/SFPRODISPLAYBOLD.otf') format('opentype');
-  font-weight: 700;
-}
-
 @layer theme {
   :root, :host {
     --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",

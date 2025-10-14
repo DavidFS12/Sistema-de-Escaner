@@ -39,9 +39,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-[url(/img/bg-home.jpg)]">
+    <div className="bg-[url(/img/home-bg.jpg)]">
       <div className="bg-white/30 backdrop-blur-md rounded-2xl flex flex-col items-center">
-        <div className="flex flex-col items-center justify-center min-h-screen gap-10 border-b-4 p-10 max-w-[390px]">
+        <div className="flex flex-col items-center justify-center min-h-screen gap-10 border-b-4 p-10 max-w-[390px] font-primary-400">
           {/*section hero*/}
           <img
             src="/img/logo.png"
@@ -50,22 +50,20 @@ export default function Home() {
           />
           <button
             onClick={() => navigate("/scan")}
-            className="relative w-full overflow-hidden px-6 py-3 rounded-4xl bg-white/10 backdrop-blur-xl border border-white/20
-              shadow-[inset_0_2px_2px_rgba(255,239,24,0.2),_0_4px_20px_rgba(24,40,255,0.5)]
-              text-white font-medium tracking-tight transition-all duration-300 ease-out
-              hover:scale-105 hover:shadow-[inset_0_2px_2px_rgba(255,255,255,0.6), _0_4px_20px_rgba(0,0,0,0.3)]
-              active:scale-95
+            className="relative w-full overflow-hidden px-6 py-3 rounded-4xl bg-white/50 backdrop-blur-xl border border-primary/80
+              shadow-[inset_0_2px_2px_rgba(0,0,0,0.5),_0_4px_20px_rgba(24,40,255,0.5)]
+              text-primary font-semibold tracking-tight transition-all duration-300 ease-out
+              hover:scale-105 active:scale-95 hover:bg-black/20 hover:text-secondary
             "
           >
             Escanear
           </button>
           <button
             onClick={() => navigate("/register")}
-            className="relative w-full overflow-hidden px-6 py-3 rounded-4xl bg-white/10 backdrop-blur-xl border border-white/20
-              shadow-[inset_0_2px_2px_rgba(255,239,24,0.2),_0_4px_20px_rgba(24,40,255,0.5)]
-              text-white font-medium tracking-tight transition-all duration-300 ease-out
-              hover:scale-105 hover:shadow-[inset_0_2px_2px_rgba(255,255,255,0.6), _0_4px_20px_rgba(0,0,0,0.3)]
-              active:scale-95
+            className="relative w-full overflow-hidden px-6 py-3 rounded-4xl bg-white/50 backdrop-blur-xl border border-secondary/80
+              shadow-[inset_0_2px_2px_rgba(0,0,0,0.2),_0_4px_40px_rgba(255,239,24,0.5)]
+              text-primary font-semibold tracking-tight transition-all duration-300 ease-out
+              hover:scale-105 active:scale-95 hover:bg-black/20 hover:text-secondary
             "
           >
             Registrar
@@ -82,27 +80,33 @@ export default function Home() {
             No hay productos registrados aún.
           </p>
         ) : (
-          <div className="flex flex-col gap-10 p-4">
-            <h1 className="text-center text-white text-4xl font-bold">
+          <div className="flex flex-col gap-10 p-4 font-primary-400">
+            <h1 className="text-center text-primary text-4xl font-bold">
               Catálogo
             </h1>
             {products.map((product) => (
               <div
                 key={product.id}
-                className="flex flex-col bg-white rounded-2xl shadow-md overflow-hidden"
+                className="flex flex-col bg-black/80 rounded-2xl shadow-md overflow-hidden"
               >
                 <img
                   src={product.image}
                   alt={product.name}
                   className="w-full h-52 object-cover"
                 />
-                <div className="flex justify-between px-6 py-4">
-                  <h2 className="text-xl font-semibold text-primary">
-                    {product.name}
-                  </h2>
-                  <p className="text-primary font-bold text-2xl">
-                    S/. {product.price.toFixed(2)}
-                  </p>
+                <div className="flex flex-col px-4 py-2">
+                  <div>
+                    <h2 className="text-lg text-white">
+                      Código:{" "}
+                      <span className="font-medium">{product.barcode}</span>
+                    </h2>
+                  </div>
+                  <div className="flex justify-between">
+                    <h2 className="text-lg text-white">{product.name}</h2>
+                    <p className="text-white font-medium text-xl">
+                      S/. {product.price.toFixed(2)}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
