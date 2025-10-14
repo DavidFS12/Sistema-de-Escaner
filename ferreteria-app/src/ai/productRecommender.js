@@ -1,10 +1,9 @@
-
 export function getProductRecommendations(product, allProducts){
   if(!product?.name || !Array.isArray(allProducts)) return [];
 
   const keywords = extractKeywords(product.name);
 
-  const similar = allProducts.filters((p) => {
+  const similar = allProducts.filter((p) => {
     if(p.id === product.id) return false;
     const name = p.name.toLowerCase();
     return keywords.some((kw) => name.includes(kw));

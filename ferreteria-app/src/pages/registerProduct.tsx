@@ -112,25 +112,19 @@ export default function AddProduct() {
           <button
             type="submit"
             disabled={loading}
-            className="relative w-full overflow-hidden px-6 py-3 rounded-4xl bg-white/50 backdrop-blur-xl border border-primary/80
-              shadow-[inset_0_2px_2px_rgba(0,0,0,0.5),_0_4px_20px_rgba(24,40,255,0.5)]
-              text-primary font-semibold tracking-tight transition-all duration-300 ease-out
-              hover:scale-105 active:scale-95 hover:bg-black/20 hover:text-white
-                "
+            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
           >
-            {loading ? "Guardando..." : "Guardar button"}
+            {loading ? "Guardando..." : "Guardar Producto"}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
           </button>
         </form>
         <div className="my-10">
           <button
             onClick={() => navigate("/")}
-            className="relative w-full overflow-hidden px-6 py-3 rounded-4xl bg-white/50 backdrop-blur-xl border border-red-500/80
-              shadow-[inset_0_2px_2px_rgba(0,0,0,0.2),_0_4px_40px_rgba(255,0,0,0.5)]
-              text-primary font-semibold tracking-tight transition-all duration-300 ease-out
-              hover:scale-105 active:scale-95 hover:bg-black/20 hover:text-white
-                "
+            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-black via-gray-600 to-black animate-gradient shadow-lg border-[1px] border-white/70"
           >
-            Regresar
+            <span className="relative z-10">✨ Regresar</span>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
           </button>
         </div>
       </div>

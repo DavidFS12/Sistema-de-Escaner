@@ -3,6 +3,7 @@ import Home from "./pages/home";
 import ScanBarcode from "./pages/scanBarcode";
 import RegisterProduct from "./pages/registerProduct";
 import ScanBarcodeAlt from "./pages/ScanBarcodeAlt";
+import BirdButtons from "./pages/diseñoButton";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/scan" element={<ScanBarcode />} />
         <Route path="/register" element={<RegisterProduct />} />
         <Route path="/scan-alt" element={<ScanBarcodeAlt />} />
+        <Route path="/button" element={<BirdButtons />} />
       </Routes>
     </Router>
   );

@@ -4,6 +4,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
 import { getProductRecommendations } from "../ai/productRecommender";
+import { Input } from "../components/ui/input";
 
 interface Product {
   id: string;
@@ -16,18 +17,18 @@ interface Product {
 
 export default function ScanBarcode() {
   const [recommendations, setRecommendations] = useState<Product[]>([]);
-  const videoRef = useRef<HTMLDivElement>(null);
   const [barcode, setBarcode] = useState<string>("");
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [manualCode, setManualCode] = useState("");
+  const videoRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // 🔹 Cargar recomendaciones cuando se detecta producto
   useEffect(() => {
     if (product) fetchRecommendations();
   }, [product]);
 
-  // 🔹 Obtener todos los productos de Firestore
   async function getAllProductsFromDB(): Promise<Product[]> {
     const snapshot = await getDocs(collection(db, "products"));
     return snapshot.docs.map((doc) => ({
@@ -36,36 +37,40 @@ export default function ScanBarcode() {
     }));
   }
 
-  // 🔹 Generar recomendaciones basadas en similitud del nombre
   async function fetchRecommendations() {
     const allProducts = await getAllProductsFromDB();
     const recs = getProductRecommendations(product!, allProducts);
     setRecommendations(recs);
   }
 
-  // 🔹 Inicializar cámara con Quagga
+  // =============================
+  // 🎥 Iniciar cámara y escáner
+  // =============================
   useEffect(() => {
     if (!videoRef.current) return;
+
     let initialized = false;
+    let detections: Record<string, number> = {};
+    let lastDetected = "";
 
     const onDetected = (data: any) => {
-      if (data?.codeResult?.code) {
-        const code = data.codeResult.code;
-        console.log("Código detectado:", code);
+      const code = data?.codeResult?.code;
+      if (!code) return;
+
+      detections[code] = (detections[code] || 0) + 1;
+
+      // Confirmar solo si se detecta 3 veces seguidas el mismo código
+      if (detections[code] >= 3 && code !== lastDetected) {
+        console.log("✅ Código confirmado:", code);
+        lastDetected = code;
         setBarcode(code);
-        try {
-          if (initialized && typeof (Quagga as any).stop === "function") {
-            (Quagga as any).stop();
-            initialized = false;
-          }
-        } catch (err) {
-          console.warn("Error al detener Quagga:", err);
-        }
+        Quagga.stop();
+        initialized = false;
       }
     };
 
     try {
-      (Quagga as any).init(
+      Quagga.init(
         {
           inputStream: {
             type: "LiveStream",
@@ -85,11 +90,11 @@ export default function ScanBarcode() {
         },
         (err: any) => {
           if (err) {
-            console.error("Error al iniciar cámara:", err);
+            console.error("❌ Error al iniciar cámara:", err);
             return;
           }
-          (Quagga as any).onDetected(onDetected);
-          (Quagga as any).start();
+          Quagga.onDetected(onDetected);
+          Quagga.start();
           initialized = true;
           console.log("📸 Cámara lista, escaneando...");
         }
@@ -98,55 +103,71 @@ export default function ScanBarcode() {
       console.error("Error inicializando Quagga:", err);
     }
 
+    // Limpieza
     return () => {
       try {
-        if (initialized) {
-          (Quagga as any).offDetected(onDetected);
-          if (typeof (Quagga as any).stop === "function") {
-            (Quagga as any).stop();
-          }
-          initialized = false;
-        }
+        Quagga.offDetected(onDetected);
+        Quagga.stop();
       } catch (err) {
         console.warn("Error en cleanup de Quagga:", err);
       }
     };
   }, []);
 
-  // 🔹 Buscar producto en Firestore cuando se detecta código
+  // =============================
+  // 🔎 Buscar producto escaneado
+  // =============================
   useEffect(() => {
-    if (barcode) {
-      const fetchProduct = async () => {
-        setLoading(true);
-        try {
-          const q = query(
-            collection(db, "products"),
-            where("barcode", "==", barcode)
-          );
-          const snapshot = await getDocs(q);
-          if (!snapshot.empty) {
-            const doc = snapshot.docs[0];
-            setProduct({ id: doc.id, ...(doc.data() as Product) });
-          } else {
-            setProduct(null);
-          }
-        } catch (error) {
-          console.error("Error buscando el producto: ", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchProduct();
-    }
+    if (!barcode) return;
+    fetchProduct(barcode);
   }, [barcode]);
 
+  const fetchProduct = async (codigo: string) => {
+    setLoading(true);
+    setNotFound(false);
+    setProduct(null);
+
+    try {
+      const q = query(
+        collection(db, "products"),
+        where("barcode", "==", codigo)
+      );
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        setProduct({ ...(doc.data() as Product), id: doc.id });
+      } else {
+        setNotFound(true);
+      }
+    } catch (error) {
+      console.error("Error buscando producto:", error);
+      setNotFound(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // =============================
+  // 🧾 Input manual
+  // =============================
+  const handleManualSearch = () => {
+    if (manualCode.trim() === "") return;
+    setBarcode(manualCode.trim());
+  };
+
+  // =============================
+  // 🧭 Acciones UI
+  // =============================
   const handleRegister = () => navigate(`/register?barcode=${barcode}`);
 
   const handleRestart = () => {
     setBarcode("");
     setProduct(null);
+    setNotFound(false);
+    setRecommendations([]);
     try {
-      (Quagga as any).start();
+      Quagga.start();
     } catch (err) {
       console.warn("No se pudo reiniciar Quagga:", err);
     }
@@ -154,123 +175,131 @@ export default function ScanBarcode() {
 
   return (
     <div className="min-h-screen bg-[url(/img/bg-scan.jpg)] flex flex-col items-center justify-center p-5">
-      <div className="bg-white/30 backdrop-blur-sm w-full rounded-2xl flex flex-col items-center gap-10 p-4 max-w-[390px]">
-        <h1 className="text-3xl text-center font-primary-400 font-bold mt-5 text-primary">
-          Escanear Código de Barras
-        </h1>
-
-        {/* Vista de cámara */}
-        <div
-          ref={videoRef}
-          className="bg-primary relative w-full max-w-md rounded-2xl overflow-hidden shadow-lg"
-        >
-          {!barcode && (
-            <p className="text-center text-secondary-500 py-10">
-              Activando cámara...
-            </p>
-          )}
+      <div className="bg-white/30 backdrop-blur-sm w-full rounded-2xl flex flex-col p-4 max-w-[390px]">
+        <div className="flex flex-col gap-5 py-10 border-b-2 border-white">
+          <h1 className="text-3xl text-center font-primary-400 font-bold text-primary">
+            Buscar por Escaner
+          </h1>
+          <div
+            ref={videoRef}
+            className="bg-black relative w-full h-52 rounded-2xl overflow-hidden shadow-lg"
+          >
+            {!barcode && <div></div>}
+          </div>
+          <button
+            onClick={handleRestart}
+            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
+          >
+            <span className="relative z-10">✨ Volver a Escanear</span>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
+          </button>
+        </div>
+        {/* Input manual */}
+        <div className="w-full flex flex-col gap-5 py-10 border-b-2 border-white">
+          <h1 className="text-3xl text-center font-primary-400 font-bold text-primary">
+            Buscar por Codigo
+          </h1>
+          <Input
+            type="number"
+            placeholder="Codigo"
+            value={manualCode}
+            onChange={(e) => setManualCode(e.target.value)}
+            className="rounded-4xl p-6 bg-black text-white placeholder-white border-white border-2"
+          />
+          <button
+            onClick={handleManualSearch}
+            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
+          >
+            <span className="relative z-10">✨ Buscar</span>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
+          </button>
+        </div>
+        <div className="py-10">
+          <button
+            onClick={() => navigate("/")}
+            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-black via-gray-600 to-black animate-gradient shadow-lg border-[1px] border-white/70"
+          >
+            <span className="relative z-10">✨ Regresar</span>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
+          </button>
         </div>
 
-        {/* Botones principales */}
-        <button
-          disabled={loading}
-          onClick={handleRestart}
-          className="w-full px-6 py-3 rounded-4xl bg-white/50 backdrop-blur-xl border border-primary/80
-              shadow-[inset_0_2px_2px_rgba(0,0,0,0.5),_0_4px_20px_rgba(24,40,255,0.5)]
-              text-primary font-semibold tracking-tight transition-all duration-300 ease-out
-              hover:scale-105 active:scale-95 hover:bg-black/20 hover:text-secondary"
-        >
-          Reintentar
-        </button>
-
-        <button
-          onClick={() => navigate("/")}
-          className="w-full px-6 py-3 rounded-4xl bg-white/50 backdrop-blur-xl border border-secondary/80
-              shadow-[inset_0_2px_2px_rgba(0,0,0,0.2),_0_4px_40px_rgba(255,239,24,0.5)]
-              text-primary font-semibold tracking-tight transition-all duration-300 ease-out
-              hover:scale-105 active:scale-95 hover:bg-black/20 hover:text-secondary"
-        >
-          Regresar
-        </button>
-
-        {/* Resultado del escaneo */}
-        {barcode && (
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-lg text-center py-5">
-            <p className="text-gray-600">
-              Código detectado: <span className="font-semibold">{barcode}</span>
-            </p>
-
-            {loading ? (
-              <p className="text-primary">Buscando Producto ...</p>
-            ) : product ? (
-              <div className="flex flex-col mt-4 p-5 gap-4">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-52 object-cover rounded-2xl"
-                />
-                <h2 className="text-xl font-bold text-gray-800 mt-3">
-                  {product.name}
+        {/* Resultado */}
+        {loading ? (
+          <p className="text-primary">Buscando producto...</p>
+        ) : product ? (
+          <div>
+            <h3 className="text-3xl font-bold text-primary font-primary-400 mb-2">
+              Resultado
+            </h3>
+            <div className="w-full bg-black/80 rounded-2xl shadow-lg overflow-hidden">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-52 object-cover"
+              />
+              <div className="flex flex-col px-4 py-2">
+                <h2 className="text-lg text-white">
+                  Código: <span className="font-medium">{product.barcode}</span>
                 </h2>
-                <p className="text-primary font-bold text-xl mt-1">
-                  S/. {product.price.toFixed(2)}
-                </p>
+                <div className="flex justify-between">
+                  <h2 className="text-lg text-white">{product.name}</h2>
+                  <p className="text-white font-medium text-xl">
+                    S/. {product.price.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-                {/* Productos similares */}
-                {recommendations.length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-3 text-primary">
-                      Productos similares
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      {recommendations.map((rec) => (
-                        <div
-                          key={rec.id}
-                          className="shadow rounded-lg p-2 hover:scale-105 transition cursor-pointer"
-                        >
-                          <img
-                            src={rec.image}
-                            alt={rec.name}
-                            className="h-32 w-full object-contain"
-                          />
-                          <p className="text-sm font-medium mt-2">{rec.name}</p>
-                          <p className="text-xs text-gray-500">
-                            {rec.brand || "Sin marca"}
+            {/* Recomendaciones */}
+            {recommendations.length > 0 && (
+              <div className="mt-10">
+                <h3 className="text-3xl font-bold text-primary font-primary-400">
+                  Productos similares
+                </h3>
+                <div className="flex flex-col gap-5 m-3">
+                  {recommendations.map((rec) => (
+                    <div
+                      key={rec.id}
+                      className="shadow rounded-2xl overflow-hidden bg-black/50"
+                    >
+                      <img
+                        src={rec.image}
+                        alt={rec.name}
+                        className="w-full h-40 object-cover"
+                      />
+                      <div className="flex flex-col px-4 py-2">
+                        <h2 className="text-md text-white">
+                          Código:{" "}
+                          <span className="font-medium">{rec.barcode}</span>
+                        </h2>
+                        <div className="flex justify-between text-lg">
+                          <h2 className="text-white">{rec.name}</h2>
+                          <p className="text-white font-medium">
+                            S/. {rec.price.toFixed(2)}
                           </p>
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                <button
-                  onClick={handleRestart}
-                  className="w-full px-6 py-3 rounded-4xl bg-white/10 backdrop-blur-xl border border-white/20
-                    shadow-[inset_0_2px_2px_rgba(255,239,24,0.2),_0_4px_20px_rgba(24,40,255,0.5)]
-                    text-primary font-medium tracking-tight transition-all duration-300 ease-out
-                    hover:scale-105 active:scale-95"
-                >
-                  Escanear de nuevo
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2 px-6 py-4">
-                <button
-                  onClick={handleRegister}
-                  className="px-6 py-3 rounded-4xl bg-white/10 backdrop-blur-xl border border-white/20
-                    shadow-[inset_0_2px_2px_rgba(255,239,24,0.2),_0_4px_20px_rgba(24,40,255,0.5)]
-                    text-primary font-medium tracking-tight transition-all duration-300 ease-out
-                    hover:scale-105 active:scale-95"
-                >
-                  ➕ Registrar producto
-                </button>
-                <p className="text-red-500 font-medium">
-                  ❌ Producto no encontrado
-                </p>
+                  ))}
+                </div>
               </div>
             )}
           </div>
-        )}
+        ) : notFound ? (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center my-2">
+            <p className="text-red-600 font-bold mb-3">
+              Producto no encontrado
+            </p>
+            <button
+              onClick={handleRegister}
+              className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
+            >
+              <span className="relative z-10">✨ Registrar</span>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

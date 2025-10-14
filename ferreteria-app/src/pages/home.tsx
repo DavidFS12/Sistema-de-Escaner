@@ -39,10 +39,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-[url(/img/home-bg.jpg)]">
-      <div className="bg-white/30 backdrop-blur-md rounded-2xl flex flex-col items-center">
-        <div className="flex flex-col items-center justify-center min-h-screen gap-10 border-b-4 p-10 max-w-[390px] font-primary-400">
-          {/*section hero*/}
+    <div className="bg-[url(/img/bg-home-of.avif)] flex justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center m-5">
+        <div className="g-white/30 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center gap-10 max-w-[390px] px-5 py-10">
           <img
             src="/img/logo.png"
             alt="logo"
@@ -50,23 +49,17 @@ export default function Home() {
           />
           <button
             onClick={() => navigate("/scan")}
-            className="relative w-full overflow-hidden px-6 py-3 rounded-4xl bg-white/50 backdrop-blur-xl border border-primary/80
-              shadow-[inset_0_2px_2px_rgba(0,0,0,0.5),_0_4px_20px_rgba(24,40,255,0.5)]
-              text-primary font-semibold tracking-tight transition-all duration-300 ease-out
-              hover:scale-105 active:scale-95 hover:bg-black/20 hover:text-secondary
-            "
+            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
           >
-            Escanear
+            <span className="relative z-10">✨ Escanear</span>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
           </button>
           <button
             onClick={() => navigate("/register")}
-            className="relative w-full overflow-hidden px-6 py-3 rounded-4xl bg-white/50 backdrop-blur-xl border border-secondary/80
-              shadow-[inset_0_2px_2px_rgba(0,0,0,0.2),_0_4px_40px_rgba(255,239,24,0.5)]
-              text-primary font-semibold tracking-tight transition-all duration-300 ease-out
-              hover:scale-105 active:scale-95 hover:bg-black/20 hover:text-secondary
-            "
+            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
           >
-            Registrar
+            <span className="relative z-10">✨ Registrar</span>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
           </button>
         </div>
 
@@ -81,6 +74,7 @@ export default function Home() {
           </p>
         ) : (
           <div className="flex flex-col gap-10 p-4 font-primary-400">
+            {/*
             <h1 className="text-center text-primary text-4xl font-bold">
               Catálogo
             </h1>
@@ -110,6 +104,7 @@ export default function Home() {
                 </div>
               </div>
             ))}
+              */}
           </div>
         )}
       </div>
