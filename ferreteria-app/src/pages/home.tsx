@@ -18,7 +18,6 @@ export default function Home() {
   const navigate = useNavigate();
   const [products, setProduct] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isClicked, setIsClicked] = useState(false);
 
   useEffect(() => {
     const fetchProdcuts = async () => {

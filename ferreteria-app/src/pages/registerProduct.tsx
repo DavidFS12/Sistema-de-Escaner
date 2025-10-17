@@ -16,8 +16,6 @@ export default function AddProduct() {
   const [price, setPrice] = useState<number | "">("");
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [fileName, setFileName] = useState("Ningunarchivo seleccionado");
-  const [focus, setFocus] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -152,7 +150,7 @@ export default function AddProduct() {
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="display-none opacity-0 cursor-pointer"
+                  className="opacity-1 cursor-pointer"
                 />
               </div>
             </div>

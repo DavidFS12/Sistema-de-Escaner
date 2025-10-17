@@ -4,10 +4,8 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
 import { getProductRecommendations } from "../ai/productRecommender";
-import { Input } from "../components/ui/input";
 import GooeyButton from "../components/GooeyButton";
 import LiquidEther from "../components/LiquidEther";
-import SplitText from "../components/SplitText";
 import { Barcode } from "lucide-react";
 
 interface Product {
@@ -47,9 +45,6 @@ export default function ScanBarcode() {
     setRecommendations(recs);
   }
 
-  // =============================
-  // 🎥 Iniciar cámara y escáner
-  // =============================
   useEffect(() => {
     if (!videoRef.current) return;
 
@@ -107,7 +102,6 @@ export default function ScanBarcode() {
       console.error("Error inicializando Quagga:", err);
     }
 
-    // Limpieza
     return () => {
       try {
         Quagga.offDetected(onDetected);
@@ -118,9 +112,6 @@ export default function ScanBarcode() {
     };
   }, []);
 
-  // =============================
-  // 🔎 Buscar producto escaneado
-  // =============================
   useEffect(() => {
     if (!barcode) return;
     fetchProduct(barcode);
@@ -152,30 +143,12 @@ export default function ScanBarcode() {
     }
   };
 
-  // =============================
-  // 🧾 Input manual
-  // =============================
   const handleManualSearch = () => {
     if (manualCode.trim() === "") return;
     setBarcode(manualCode.trim());
   };
 
-  // =============================
-  // 🧭 Acciones UI
-  // =============================
   const handleRegister = () => navigate(`/registrar?barcode=${barcode}`);
-
-  const handleRestart = () => {
-    setBarcode("");
-    setProduct(null);
-    setNotFound(false);
-    setRecommendations([]);
-    try {
-      Quagga.start();
-    } catch (err) {
-      console.warn("No se pudo reiniciar Quagga:", err);
-    }
-  };
 
   return (
     <div className="bg-gradient-to-br from-primary-900 via-primary to-secondary min-h-screen relative overflow-hidden grid">
