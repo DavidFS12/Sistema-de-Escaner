@@ -79,11 +79,11 @@ export default function AddProduct() {
           autoRampDuration={0.6}
         />
       </div>
-      <div className="flex flex-col justify-center items-center">
-        <div className="bg-white rounded-2xl flex flex-col items-center justify-center gap-5 max-w-[390px] px-5 py-10 relative">
+      <div className="flex flex-col items-center justify-center m-5">
+        <div className="bg-white rounded-2xl flex flex-col items-center justify-center gap-5 px-5 py-10 relative">
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-2 px-5 w-full"
+            className="flex flex-col gap-2 max-w-[300px]"
           >
             <h1 className="text-primary font-primary text-2xl font-bold text-center">
               REGISTRAR PRODUCTO

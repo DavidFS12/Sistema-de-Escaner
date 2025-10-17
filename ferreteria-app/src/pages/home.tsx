@@ -70,7 +70,7 @@ export default function Home() {
         <div className="bg-white rounded-2xl flex flex-col items-center justify-center max-w-[390px] gap-5 px-5 relative">
           <SplitText
             text="SISTEMA DE ESCANEO"
-            className="text-primary font-primary text-4xl font-bold text-center"
+            className="text-primary font-primary-400 text-4xl font-extrabold text-center"
             delay={100}
             duration={0.8}
             ease="power3.out"
