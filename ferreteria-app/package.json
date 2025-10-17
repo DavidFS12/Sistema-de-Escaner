@@ -11,6 +11,7 @@
     "css": "npx @tailwindcss/cli -i ./src/index.css -o ./src/tailwind.css --watch"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
     "@react-three/rapier": "^2.1.0",
@@ -19,6 +20,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^12.4.0",
+    "gsap": "^3.13.0",
     "jsqr": "^1.4.0",
     "lucide-react": "^0.545.0",
     "meshline": "^3.3.1",

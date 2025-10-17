@@ -110,8 +110,7 @@ const GooeyButton: React.FC<GooeyButtonProps> = ({
             overflow: hidden;
             z-index: 2;
             width: 100%;
-            border-radius: 40px;
-            border: 2px solid white;
+            border-radius: 16px;
           }
 
           .gooey-button .effect {

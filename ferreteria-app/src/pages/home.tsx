@@ -4,6 +4,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase/config";
 import GooeyButton from "../components/GooeyButton";
 import LiquidEther from "../components/LiquidEther";
+import SplitText from "../components/SplitText";
 
 interface Product {
   id: string;
@@ -41,8 +42,12 @@ export default function Home() {
     fetchProdcuts();
   }, []);
 
+  const handleAnimationComplete = () => {
+    console.log("All letters have animated!");
+  };
+
   return (
-    <div className="bg-black min-h-screen relative overflow-hidden grid">
+    <div className="bg-gradient-to-br from-primary-900 via-primary to-secondary min-h-screen relative overflow-hidden grid">
       <div className="fixed inset-0 -z-10pointer-events-none">
         <LiquidEther
           colors={["#2818FF", "#5A8BFF", "#FFF14D", "#131753"]}
@@ -63,24 +68,35 @@ export default function Home() {
         />
       </div>
       <div className="flex flex-col items-center justify-center m-5">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center gap-10 max-w-[390px] px-5 py-10">
-          <h1 className="text-secondary font-primary text-4xl font-bold text-center">
-            SISTEMA DE ESCANEO
-          </h1>
+        <div className="bg-white rounded-2xl flex flex-col items-center justify-center max-w-[390px] gap-5 px-5 relative">
+          <SplitText
+            text="SISTEMA DE ESCANEO"
+            className="text-primary font-primary text-4xl font-bold text-center"
+            delay={100}
+            duration={0.8}
+            ease="power3.out"
+            splitType="chars"
+            from={{ opacity: 0, y: 40 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.1}
+            rootMargin="-100px"
+            textAlign="center"
+            onLetterAnimationComplete={handleAnimationComplete}
+          />
           <img
             src="/img/logo2.png"
             alt="logo"
-            className="max-h-4/12 rounded-2xl w-full relative"
+            className="max-h-4/12 rounded-2xl w-full"
           />
-          <div className="flex flex-col w-full gap-10 py-10">
-            <div className="rounded-4xl bg-gradient-to-br from-primary-950 via-primary-900 to-secondary/40">
+          <div className="flex flex-col w-full gap-5 relative">
+            <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-950">
               <GooeyButton
                 label="Escanear"
                 delayBeforeAction={800}
                 onClick={() => navigate("/escanear-producto")}
               />
             </div>
-            <div className="rounded-4xl bg-gradient-to-br from-primary-950 via-primary-900 to-secondary/70">
+            <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-950">
               <GooeyButton
                 label="Registrar"
                 delayBeforeAction={800}

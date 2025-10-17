@@ -5,20 +5,19 @@ import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import GooeyButton from "../components/GooeyButton";
 import LiquidEther from "../components/LiquidEther";
+import { Banknote, Barcode, CloudUpload, Hammer } from "lucide-react";
 
 export default function AddProduct() {
   const navigate = useNavigate();
-
   const [params] = useSearchParams();
   const barcodeFromScan = params.get("barcode") || "";
-
   const [barcode, setBarcode] = useState(barcodeFromScan);
-
   const [name, setName] = useState("");
   const [price, setPrice] = useState<number | "">("");
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [fileName, setFileName] = useState("Ningunarchivo seleccionado");
+  const [focus, setFocus] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -62,7 +61,7 @@ export default function AddProduct() {
   };
 
   return (
-    <div className="bg-black min-h-screen relative overflow-hidden grid">
+    <div className="bg-gradient-to-br from-primary-900 via-primary to-secondary min-h-screen relative overflow-hidden grid">
       <div className="fixed inset-0 -z-10pointer-events-none">
         <LiquidEther
           colors={["#2818FF", "#5A8BFF", "#FFF14D", "#131753"]}
@@ -83,49 +82,81 @@ export default function AddProduct() {
         />
       </div>
       <div className="flex flex-col justify-center items-center">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center gap-10 max-w-[390px] px-5 py-10 relative">
-          <h1 className="text-secondary font-bold font-primary-400 text-4xl">
-            Registrar Producto
-          </h1>
+        <div className="bg-white rounded-2xl flex flex-col items-center justify-center gap-5 max-w-[390px] px-5 py-10 relative">
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-5 px-5 w-full"
+            className="flex flex-col gap-2 px-5 w-full"
           >
-            <input
-              type="text"
-              placeholder="Código de barras"
-              value={barcode}
-              onChange={(e) => setBarcode(e.target.value)}
-              className="w-full p-3 font-sans rounded-4xl bg-white backdrop-blur-2xl placeholder-black/50 border border-black
-              shadow-[inset_0_0px_0px_rgb(255,255,255,0.1),_0px_0px_10px_10px_rgba(0,0,0,0.3)]
-            "
-            />
-            <input
-              type="text"
-              placeholder="Nombre del producto"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 font-sans rounded-4xl bg-white backdrop-blur-2xl placeholder-black/50 border border-black
-              shadow-[inset_0_0px_0px_rgb(255,255,255,0.1),_0px_0px_10px_10px_rgba(0,0,0,0.3)]
-            "
-            />
-            <input
-              type="number"
-              placeholder="Precio"
-              value={price}
-              onChange={(e) =>
-                setPrice(e.target.value === "" ? "" : Number(e.target.value))
-              }
-              className="w-full p-3 font-sans rounded-4xl bg-white backdrop-blur-2xl placeholder-black/50 border border-black
-              shadow-[inset_0_0px_0px_rgb(255,255,255,0.1),_0px_0px_10px_10px_rgba(0,0,0,0.3)]
-            "
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="cursor-pointer file:w-2/3 file:p-3 file:text-black/50 font-sans file:border file:border-black file:rounded-4xl file:bg-white file:backdrop-blur-md"
-            />
+            <h1 className="text-primary font-primary text-2xl font-bold text-center">
+              REGISTRAR PRODUCTO
+            </h1>
+            <div>
+              <label className="text-gray-600 text-md font-sans font-medium">
+                Código de barras:
+              </label>
+              <div className="flex items-center gap-2 mt-1 border rounded-lg px-2 border-black">
+                <Barcode size={20} />
+                <input
+                  type="number"
+                  placeholder="Ingresa el código de barras"
+                  value={barcode}
+                  onChange={(e) => setBarcode(e.target.value)}
+                  className="bg-transparent outline-none text-black placeholder-gray-400 flex-1 py-2"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-gray-600 text-md font-sans font-medium">
+                Nombre:
+              </label>
+              <div className="flex items-center gap-2 mt-1 border rounded-lg px-2 border-black">
+                <Hammer size={20} />
+                <input
+                  type="text"
+                  placeholder="Nombre del producto"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="bg-transparent outline-none text-black placeholder-gray-400 flex-1 py-2"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-gray-600 text-md font-sans font-medium">
+                Precio:
+              </label>
+              <div className="flex items-center gap-2 mt-1 border rounded-lg px-2 border-black">
+                <Banknote size={20} />
+                <input
+                  type="number"
+                  placeholder="Precio"
+                  value={price}
+                  onChange={(e) =>
+                    setPrice(
+                      e.target.value === "" ? "" : Number(e.target.value)
+                    )
+                  }
+                  className="bg-transparent outline-none text-black placeholder-gray-400 flex-1 py-2"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-gray-600 text-md font-sans font-medium">
+                Imagen del producto
+              </label>
+              <div className="mt-1 border-dashed border-2 border-gray-600 rounded-lg p-8 cursor-pointer transition-all duration-300 items-center justify-center flex flex-col hover:border-primary hover:bg-[#fbf4ff]">
+                <CloudUpload size={60} className="text-primary-800 pb-2" />
+                <p className="text-md text-gray-500 font-primary-400">
+                  Haz clic para subir una imagen
+                </p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="display-none opacity-0 cursor-pointer"
+                />
+              </div>
+            </div>
+
             {image && (
               <img
                 src={image}
@@ -136,13 +167,13 @@ export default function AddProduct() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-primary-900 shadow-lg border-2 border-white"
+              className="w-full relative p-4 font-semibold text-white rounded-lg bg-gradient-to-r from-primary-500 to-primary-700 hover:from-primary hover:to-primary-900 hover:translate-y-[-2px] hover:shadow-2xl mt-4"
             >
               {loading ? "Guardando..." : "Guardar Producto"}
             </button>
           </form>
-          <div className="pt-10 w-full">
-            <div className="rounded-4xl bg-gradient-to-br from-primary-950 via-primary-900 to-secondary/40">
+          <div className="w-full">
+            <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-950">
               <GooeyButton
                 label="Regresar"
                 delayBeforeAction={800}
