@@ -5,6 +5,8 @@ import { db } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
 import { getProductRecommendations } from "../ai/productRecommender";
 import { Input } from "../components/ui/input";
+import GooeyButton from "../components/GooeyButton";
+import LiquidEther from "../components/LiquidEther";
 
 interface Product {
   id: string;
@@ -174,132 +176,140 @@ export default function ScanBarcode() {
   };
 
   return (
-    <div className="min-h-screen bg-[url(/img/bg-scan.jpg)] flex flex-col items-center justify-center p-5">
-      <div className="bg-white/30 backdrop-blur-sm w-full rounded-2xl flex flex-col p-4 max-w-[390px]">
-        <div className="flex flex-col gap-5 py-10 border-b-2 border-white">
-          <h1 className="text-3xl text-center font-primary-400 font-bold text-primary">
-            Buscar por Escaner
-          </h1>
-          <div
-            ref={videoRef}
-            className="bg-black relative w-full h-52 rounded-2xl overflow-hidden shadow-lg"
-          >
-            {!barcode && <div></div>}
-          </div>
-          <button
-            onClick={handleRestart}
-            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
-          >
-            <span className="relative z-10">✨ Volver a Escanear</span>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
-          </button>
-        </div>
-        {/* Input manual */}
-        <div className="w-full flex flex-col gap-5 py-10 border-b-2 border-white">
-          <h1 className="text-3xl text-center font-primary-400 font-bold text-primary">
-            Buscar por Codigo
-          </h1>
-          <Input
-            type="number"
-            placeholder="Codigo"
-            value={manualCode}
-            onChange={(e) => setManualCode(e.target.value)}
-            className="rounded-4xl p-6 bg-black text-white placeholder-white border-white border-2"
-          />
-          <button
-            onClick={handleManualSearch}
-            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
-          >
-            <span className="relative z-10">✨ Buscar</span>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
-          </button>
-        </div>
-        <div className="py-10">
-          <button
-            onClick={() => navigate("/")}
-            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-black via-gray-600 to-black animate-gradient shadow-lg border-[1px] border-white/70"
-          >
-            <span className="relative z-10">✨ Regresar</span>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
-          </button>
-        </div>
-
-        {/* Resultado */}
-        {loading ? (
-          <p className="text-primary">Buscando producto...</p>
-        ) : product ? (
-          <div>
-            <h3 className="text-3xl font-bold text-primary font-primary-400 mb-2">
-              Resultado
-            </h3>
-            <div className="w-full bg-black/80 rounded-2xl shadow-lg overflow-hidden">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-52 object-cover"
-              />
-              <div className="flex flex-col px-4 py-2">
-                <h2 className="text-lg text-white">
-                  Código: <span className="font-medium">{product.barcode}</span>
-                </h2>
-                <div className="flex justify-between">
-                  <h2 className="text-lg text-white">{product.name}</h2>
-                  <p className="text-white font-medium text-xl">
-                    S/. {product.price.toFixed(2)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Recomendaciones */}
-            {recommendations.length > 0 && (
-              <div className="mt-10">
-                <h3 className="text-3xl font-bold text-primary font-primary-400">
-                  Productos similares
-                </h3>
-                <div className="flex flex-col gap-5 m-3">
-                  {recommendations.map((rec) => (
-                    <div
-                      key={rec.id}
-                      className="shadow rounded-2xl overflow-hidden bg-black/50"
-                    >
-                      <img
-                        src={rec.image}
-                        alt={rec.name}
-                        className="w-full h-40 object-cover"
-                      />
-                      <div className="flex flex-col px-4 py-2">
-                        <h2 className="text-md text-white">
-                          Código:{" "}
-                          <span className="font-medium">{rec.barcode}</span>
-                        </h2>
-                        <div className="flex justify-between text-lg">
-                          <h2 className="text-white">{rec.name}</h2>
-                          <p className="text-white font-medium">
-                            S/. {rec.price.toFixed(2)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : notFound ? (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center my-2">
-            <p className="text-red-600 font-bold mb-3">
-              Producto no encontrado
-            </p>
-            <button
-              onClick={handleRegister}
-              className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
+    <div className="bg-black min-h-screen relative overflow-hidden grid">
+      <div className="fixed inset-0 -z-10pointer-events-none">
+        <LiquidEther
+          colors={["#5227FF", "#FF9FFC", "#B19EEF"]}
+          mouseForce={20}
+          cursorSize={100}
+          isViscous={false}
+          viscous={30}
+          iterationsViscous={32}
+          iterationsPoisson={32}
+          resolution={0.5}
+          isBounce={false}
+          autoDemo={true}
+          autoSpeed={0.5}
+          autoIntensity={2.2}
+          takeoverDuration={0.1}
+          autoResumeDelay={3000}
+          autoRampDuration={0.6}
+        />
+      </div>
+      <div className="flex flex-col items-center justify-center m-5 relative">
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center max-w-[390px] px-5 py-10">
+          <div className="flex flex-col gap-5 pb-10 w-full items-center">
+            <h1 className="text-3xl text-center font-primary-400 font-bold text-white">
+              Buscar por Escaner
+            </h1>
+            <div
+              ref={videoRef}
+              className="bg-black max-w-[320px] h-52 rounded-2xl overflow-hidden shadow-lg "
             >
-              <span className="relative z-10">✨ Registrar</span>
+              {!barcode && <div></div>}
+            </div>
+            {/* Input manual */}
+            <Input
+              type="number"
+              placeholder="Ingresar Código"
+              value={manualCode}
+              defaultValue={barcode}
+              onChange={(e) => setManualCode(e.target.value)}
+              className="rounded-4xl p-6 border-black border-2 bg-white"
+            />
+            <button
+              onClick={handleManualSearch}
+              className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-black via-black/20 to-black animate-gradient shadow-lg border-[1px] border-white/70"
+            >
+              <span className="relative z-10">Buscar</span>
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
             </button>
           </div>
-        ) : null}
+          {/* Resultado */}
+          {loading ? (
+            <p className="text-primary">Buscando producto...</p>
+          ) : product ? (
+            <div>
+              <h3 className="text-4xl font-bold text-center text-white font-primary-400 py-10">
+                Resultado
+              </h3>
+              <div className="w-full bg-black/80 rounded-2xl shadow-lg overflow-hidden">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-52 object-cover"
+                />
+                <div className="flex flex-col px-4 py-2">
+                  <h2 className="text-lg text-white">
+                    Código:{" "}
+                    <span className="font-medium">{product.barcode}</span>
+                  </h2>
+                  <div className="flex justify-between">
+                    <h2 className="text-lg text-white">{product.name}</h2>
+                    <p className="text-white font-medium text-xl">
+                      S/. {product.price.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recomendaciones */}
+              {recommendations.length > 0 && (
+                <div className="mt-10">
+                  <h3 className="text-3xl font-bold text-primary font-primary-400">
+                    Productos similares
+                  </h3>
+                  <div className="flex flex-col gap-5 m-3">
+                    {recommendations.map((rec) => (
+                      <div
+                        key={rec.id}
+                        className="shadow rounded-2xl overflow-hidden bg-black/50"
+                      >
+                        <img
+                          src={rec.image}
+                          alt={rec.name}
+                          className="w-full h-40 object-cover"
+                        />
+                        <div className="flex flex-col px-4 py-2">
+                          <h2 className="text-md text-white">
+                            Código:{" "}
+                            <span className="font-medium">{rec.barcode}</span>
+                          </h2>
+                          <div className="flex justify-between text-lg">
+                            <h2 className="text-white">{rec.name}</h2>
+                            <p className="text-white font-medium">
+                              S/. {rec.price.toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : notFound ? (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center my-2">
+              <p className="text-red-600 font-bold mb-3">
+                Producto no encontrado
+              </p>
+              <button
+                onClick={handleRegister}
+                className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
+              >
+                <span className="relative z-10">✨ Registrar</span>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
+              </button>
+            </div>
+          ) : null}
+          <div className="py-10 w-full">
+            <GooeyButton
+              label="Regresar"
+              delayBeforeAction={800}
+              onClick={() => navigate("/")}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
