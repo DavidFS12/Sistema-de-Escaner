@@ -3,6 +3,8 @@ import { db } from "../firebase/config";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+import GooeyButton from "../components/GooeyButton";
+import LiquidEther from "../components/LiquidEther";
 
 export default function AddProduct() {
   const navigate = useNavigate();
@@ -60,72 +62,93 @@ export default function AddProduct() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[url(/img/register-bg.jpg)] p-4">
-      <div className="bg-white/30 backdrop-blur-xl p-6 rounded-2xl shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold my-5 text-center text-primary">
-          Registrar Producto
-        </h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <input
-            type="text"
-            placeholder="Código de barras"
-            value={barcode}
-            onChange={(e) => setBarcode(e.target.value)}
-            className="w-full p-3 font-sans rounded-4xl bg-white/50 backdrop-blur-2xl placeholder-black/50 border border-black
+    <div className="bg-black min-h-screen relative overflow-hidden grid">
+      <div className="fixed inset-0 -z-10pointer-events-none">
+        <LiquidEther
+          colors={["#5227FF", "#FF9FFC", "#B19EEF"]}
+          mouseForce={20}
+          cursorSize={100}
+          isViscous={false}
+          viscous={30}
+          iterationsViscous={32}
+          iterationsPoisson={32}
+          resolution={0.5}
+          isBounce={false}
+          autoDemo={true}
+          autoSpeed={0.5}
+          autoIntensity={2.2}
+          takeoverDuration={0.1}
+          autoResumeDelay={3000}
+          autoRampDuration={0.6}
+        />
+      </div>
+      <div className="flex flex-col justify-center items-center">
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center gap-10 max-w-[390px] px-5 py-10 relative">
+          <h1 className="text-white font-bold font-primary-400 text-4xl">
+            Registrar Producto
+          </h1>
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-5 px-5 w-full"
+          >
+            <input
+              type="text"
+              placeholder="Código de barras"
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
+              className="w-full p-3 font-sans rounded-4xl bg-white backdrop-blur-2xl placeholder-black/50 border border-black
               shadow-[inset_0_0px_0px_rgb(255,255,255,0.1),_0px_0px_10px_10px_rgba(0,0,0,0.3)]
             "
-          />
-          <input
-            type="text"
-            placeholder="Nombre del producto"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-3 font-sans rounded-4xl bg-white/50 backdrop-blur-2xl placeholder-black/50 border border-black
-              shadow-[inset_0_0px_0px_rgb(255,255,255,0.1),_0px_0px_10px_10px_rgba(0,0,0,0.3)]
-            "
-          />
-          <input
-            type="number"
-            placeholder="Precio"
-            value={price}
-            onChange={(e) =>
-              setPrice(e.target.value === "" ? "" : Number(e.target.value))
-            }
-            className="w-full p-3 font-sans rounded-4xl bg-white/50 backdrop-blur-2xl placeholder-black/50 border border-black
-              shadow-[inset_0_0px_0px_rgb(255,255,255,0.1),_0px_0px_10px_10px_rgba(0,0,0,0.3)]
-            "
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="cursor-pointer file:w-2/3 file:p-3 file:text-black/50 font-sans file:border file:border-black file:rounded-4xl file:bg-white/50 file:backdrop-blur-md"
-          />
-          {image && (
-            <img
-              src={image}
-              alt="Vista previa"
-              className="w-full h-48 object-cover rounded-2xl mt-2 border border-white/50 bg-white"
             />
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
-          >
-            {loading ? "Guardando..." : "Guardar Producto"}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
-          </button>
-        </form>
-        <div className="my-10">
-          <button
-            onClick={() => navigate("/")}
-            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-black via-gray-600 to-black animate-gradient shadow-lg border-[1px] border-white/70"
-          >
-            <span className="relative z-10">✨ Regresar</span>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
-          </button>
+            <input
+              type="text"
+              placeholder="Nombre del producto"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-3 font-sans rounded-4xl bg-white backdrop-blur-2xl placeholder-black/50 border border-black
+              shadow-[inset_0_0px_0px_rgb(255,255,255,0.1),_0px_0px_10px_10px_rgba(0,0,0,0.3)]
+            "
+            />
+            <input
+              type="number"
+              placeholder="Precio"
+              value={price}
+              onChange={(e) =>
+                setPrice(e.target.value === "" ? "" : Number(e.target.value))
+              }
+              className="w-full p-3 font-sans rounded-4xl bg-white backdrop-blur-2xl placeholder-black/50 border border-black
+              shadow-[inset_0_0px_0px_rgb(255,255,255,0.1),_0px_0px_10px_10px_rgba(0,0,0,0.3)]
+            "
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="cursor-pointer file:w-2/3 file:p-3 file:text-black/50 font-sans file:border file:border-black file:rounded-4xl file:bg-white file:backdrop-blur-md"
+            />
+            {image && (
+              <img
+                src={image}
+                alt="Vista previa"
+                className="w-full h-48 object-cover rounded-2xl mt-2 border border-white/50 bg-white"
+              />
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-black via-black/20 to-black animate-gradient shadow-lg border-[1px] border-white/70"
+            >
+              {loading ? "Guardando..." : "Guardar Producto"}
+              <div className="absolute inset-0 rounded-full animate-gradient"></div>
+            </button>
+          </form>
+          <div className="pt-10 w-full">
+            <GooeyButton
+              label="Regresar"
+              delayBeforeAction={800}
+              onClick={() => navigate("/")}
+            />
+          </div>
         </div>
       </div>
     </div>

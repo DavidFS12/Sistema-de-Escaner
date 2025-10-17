@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase/config";
+import GooeyButton from "../components/GooeyButton";
+import LiquidEther from "../components/LiquidEther";
 
 interface Product {
   id: string;
@@ -15,6 +17,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [products, setProduct] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isClicked, setIsClicked] = useState(false);
 
   useEffect(() => {
     const fetchProdcuts = async () => {
@@ -39,28 +42,45 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-[url(/img/bg-home-of.avif)] flex justify-center min-h-screen">
+    <div className="bg-black min-h-screen relative overflow-hidden grid">
+      <div className="fixed inset-0 -z-10pointer-events-none">
+        <LiquidEther
+          colors={["#5227FF", "#FF9FFC", "#B19EEF"]}
+          mouseForce={20}
+          cursorSize={100}
+          isViscous={false}
+          viscous={30}
+          iterationsViscous={32}
+          iterationsPoisson={32}
+          resolution={0.5}
+          isBounce={false}
+          autoDemo={true}
+          autoSpeed={0.5}
+          autoIntensity={2.2}
+          takeoverDuration={0.1}
+          autoResumeDelay={3000}
+          autoRampDuration={0.6}
+        />
+      </div>
       <div className="flex flex-col items-center justify-center m-5">
-        <div className="g-white/30 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center gap-10 max-w-[390px] px-5 py-10">
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center gap-10 max-w-[390px] px-5 py-10">
           <img
             src="/img/logo.png"
             alt="logo"
-            className="max-h-4/12 rounded-2xl w-full"
+            className="max-h-4/12 rounded-2xl w-full relative"
           />
-          <button
-            onClick={() => navigate("/scan")}
-            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
-          >
-            <span className="relative z-10">✨ Escanear</span>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
-          </button>
-          <button
-            onClick={() => navigate("/register")}
-            className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
-          >
-            <span className="relative z-10">✨ Registrar</span>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
-          </button>
+          <div className="flex flex-col w-full gap-10 py-10">
+            <GooeyButton
+              label="Escanear"
+              delayBeforeAction={800}
+              onClick={() => navigate("/escanear-producto")}
+            />
+            <GooeyButton
+              label="Registrar"
+              delayBeforeAction={800}
+              onClick={() => navigate("/registrar")}
+            />
+          </div>
         </div>
 
         {/* Lista de productos */}
