@@ -35,7 +35,7 @@ const GooeyButton: React.FC<GooeyButtonProps> = ({
 
     const createParticle = (i: number) => {
       let rotate = noise(particleR / 10);
-      const colors = ["#2818ff", "#ffef18"];
+      const colors = ["#ffef18"];
       const t = animationTime * 2 + noise(timeVariance * 2);
       return {
         start: getXY(particleDistances[0], particleCount - i, particleCount),
@@ -99,10 +99,12 @@ const GooeyButton: React.FC<GooeyButtonProps> = ({
         {`
           .gooey-button {
             position: relative;
-            background: black;
+            background: transparents;
             border: none;
             color: white;
             font-size: 1.2rem;
+            font-weight: bold;
+            font-family: var(--font-sans);
             padding: 20px;
             cursor: pointer;
             overflow: hidden;
@@ -122,7 +124,7 @@ const GooeyButton: React.FC<GooeyButtonProps> = ({
           }
 
           .gooey-button .filter {
-            filter: blur(5px) contrast(100) blur(0);
+            filter: blur(10px) contrast(100) blur(0);
             mix-blend-mode: lighten;
           }
 
@@ -163,8 +165,8 @@ const GooeyButton: React.FC<GooeyButtonProps> = ({
           .point {
             display: block;
             opacity: 0;
-            width: 20px;
-            height: 20px;
+            width: 5px;
+            height: 5px;
             border-radius: 9999px;
             transform-origin: center;
           }

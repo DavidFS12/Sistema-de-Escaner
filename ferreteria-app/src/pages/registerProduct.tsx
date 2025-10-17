@@ -65,7 +65,7 @@ export default function AddProduct() {
     <div className="bg-black min-h-screen relative overflow-hidden grid">
       <div className="fixed inset-0 -z-10pointer-events-none">
         <LiquidEther
-          colors={["#5227FF", "#FF9FFC", "#B19EEF"]}
+          colors={["#2818FF", "#5A8BFF", "#FFF14D", "#131753"]}
           mouseForce={20}
           cursorSize={100}
           isViscous={false}
@@ -84,7 +84,7 @@ export default function AddProduct() {
       </div>
       <div className="flex flex-col justify-center items-center">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center gap-10 max-w-[390px] px-5 py-10 relative">
-          <h1 className="text-white font-bold font-primary-400 text-4xl">
+          <h1 className="text-secondary font-bold font-primary-400 text-4xl">
             Registrar Producto
           </h1>
           <form
@@ -136,18 +136,19 @@ export default function AddProduct() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-black via-black/20 to-black animate-gradient shadow-lg border-[1px] border-white/70"
+              className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-primary-900 shadow-lg border-2 border-white"
             >
               {loading ? "Guardando..." : "Guardar Producto"}
-              <div className="absolute inset-0 rounded-full animate-gradient"></div>
             </button>
           </form>
           <div className="pt-10 w-full">
-            <GooeyButton
-              label="Regresar"
-              delayBeforeAction={800}
-              onClick={() => navigate("/")}
-            />
+            <div className="rounded-4xl bg-gradient-to-br from-primary-950 via-primary-900 to-secondary/40">
+              <GooeyButton
+                label="Regresar"
+                delayBeforeAction={800}
+                onClick={() => navigate("/")}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -161,7 +161,7 @@ export default function ScanBarcode() {
   // =============================
   // 🧭 Acciones UI
   // =============================
-  const handleRegister = () => navigate(`/register?barcode=${barcode}`);
+  const handleRegister = () => navigate(`/registrar?barcode=${barcode}`);
 
   const handleRestart = () => {
     setBarcode("");
@@ -179,7 +179,7 @@ export default function ScanBarcode() {
     <div className="bg-black min-h-screen relative overflow-hidden grid">
       <div className="fixed inset-0 -z-10pointer-events-none">
         <LiquidEther
-          colors={["#5227FF", "#FF9FFC", "#B19EEF"]}
+          colors={["#2818FF", "#5A8BFF", "#FFF14D", "#131753"]}
           mouseForce={20}
           cursorSize={100}
           isViscous={false}
@@ -199,7 +199,7 @@ export default function ScanBarcode() {
       <div className="flex flex-col items-center justify-center m-5 relative">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center max-w-[390px] px-5 py-10">
           <div className="flex flex-col gap-5 pb-10 w-full items-center">
-            <h1 className="text-3xl text-center font-primary-400 font-bold text-white">
+            <h1 className="text-3xl text-center font-primary-400 font-bold text-secondary">
               Buscar por Escaner
             </h1>
             <div
@@ -219,10 +219,9 @@ export default function ScanBarcode() {
             />
             <button
               onClick={handleManualSearch}
-              className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-black via-black/20 to-black animate-gradient shadow-lg border-[1px] border-white/70"
+              className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-primary-900 animate-gradient shadow-lg border-2 border-white"
             >
               <span className="relative z-10">Buscar</span>
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
             </button>
           </div>
           {/* Resultado */}
@@ -256,7 +255,7 @@ export default function ScanBarcode() {
               {/* Recomendaciones */}
               {recommendations.length > 0 && (
                 <div className="mt-10">
-                  <h3 className="text-3xl font-bold text-primary font-primary-400">
+                  <h3 className="text-3xl font-bold text-secondary font-primary-400 py-5">
                     Productos similares
                   </h3>
                   <div className="flex flex-col gap-5 m-3">
@@ -293,21 +292,23 @@ export default function ScanBarcode() {
               <p className="text-red-600 font-bold mb-3">
                 Producto no encontrado
               </p>
+              <p className="text-priamry font-bold mb-3">{barcode}</p>
               <button
                 onClick={handleRegister}
-                className="w-full relative px-8 py-3 font-semibold text-white rounded-full overflow-hidden bg-gradient-to-r from-primary-800 to-secondary-800 animate-gradient shadow-lg border-[1px] border-white/70"
+                className="w-full relative px-8 py-3 font-semibold text-white rounded-full bg-primary overflow-hidden shadow-lg border-2 border-white"
               >
-                <span className="relative z-10">✨ Registrar</span>
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 via-transparent to-white/20 blur-xl opacity-70 animate-gradient"></div>
+                <span className="relative z-10">Registrar</span>
               </button>
             </div>
           ) : null}
           <div className="py-10 w-full">
-            <GooeyButton
-              label="Regresar"
-              delayBeforeAction={800}
-              onClick={() => navigate("/")}
-            />
+            <div className="rounded-4xl bg-gradient-to-br from-primary-950 via-primary-900 to-secondary/40">
+              <GooeyButton
+                label="Regresar"
+                delayBeforeAction={800}
+                onClick={() => navigate("/")}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -45,7 +45,7 @@ export default function Home() {
     <div className="bg-black min-h-screen relative overflow-hidden grid">
       <div className="fixed inset-0 -z-10pointer-events-none">
         <LiquidEther
-          colors={["#5227FF", "#FF9FFC", "#B19EEF"]}
+          colors={["#2818FF", "#5A8BFF", "#FFF14D", "#131753"]}
           mouseForce={20}
           cursorSize={100}
           isViscous={false}
@@ -64,22 +64,29 @@ export default function Home() {
       </div>
       <div className="flex flex-col items-center justify-center m-5">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl flex flex-col items-center justify-center gap-10 max-w-[390px] px-5 py-10">
+          <h1 className="text-secondary font-primary text-4xl font-bold text-center">
+            SISTEMA DE ESCANEO
+          </h1>
           <img
-            src="/img/logo.png"
+            src="/img/logo2.png"
             alt="logo"
             className="max-h-4/12 rounded-2xl w-full relative"
           />
           <div className="flex flex-col w-full gap-10 py-10">
-            <GooeyButton
-              label="Escanear"
-              delayBeforeAction={800}
-              onClick={() => navigate("/escanear-producto")}
-            />
-            <GooeyButton
-              label="Registrar"
-              delayBeforeAction={800}
-              onClick={() => navigate("/registrar")}
-            />
+            <div className="rounded-4xl bg-gradient-to-br from-primary-950 via-primary-900 to-secondary/40">
+              <GooeyButton
+                label="Escanear"
+                delayBeforeAction={800}
+                onClick={() => navigate("/escanear-producto")}
+              />
+            </div>
+            <div className="rounded-4xl bg-gradient-to-br from-primary-950 via-primary-900 to-secondary/70">
+              <GooeyButton
+                label="Registrar"
+                delayBeforeAction={800}
+                onClick={() => navigate("/registrar")}
+              />
+            </div>
           </div>
         </div>
 
