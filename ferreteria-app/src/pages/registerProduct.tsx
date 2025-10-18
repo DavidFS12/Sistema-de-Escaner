@@ -96,6 +96,7 @@ export default function AddProduct() {
                 <Barcode size={20} />
                 <input
                   type="number"
+                  min="0"
                   placeholder="Ingresa el código de barras"
                   value={barcode}
                   onChange={(e) => setBarcode(e.target.value)}
@@ -126,6 +127,8 @@ export default function AddProduct() {
                 <Banknote size={20} />
                 <input
                   type="number"
+                  min="0"
+                  step="0.01"
                   placeholder="Precio"
                   value={price}
                   onChange={(e) =>
