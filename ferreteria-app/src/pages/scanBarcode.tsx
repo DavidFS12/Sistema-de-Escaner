@@ -7,6 +7,7 @@ import { getProductRecommendations } from "../ai/productRecommender";
 import GooeyButton from "../components/GooeyButton";
 import LiquidEther from "../components/LiquidEther";
 import { Barcode } from "lucide-react";
+import BarcodeScanner from "../components/BarcodeScanner";
 
 interface Product {
   id: string;
@@ -24,6 +25,7 @@ export default function ScanBarcode() {
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [manualCode, setManualCode] = useState("");
+  const [resultado, setResultado] = useState<any>(null);
   const videoRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -150,6 +152,17 @@ export default function ScanBarcode() {
 
   const handleRegister = () => navigate(`/registrar?barcode=${barcode}`);
 
+  const buscarProducto = async (valor: string) => {
+    console.log("Codigo: ", valor);
+    const data = await fetchProduct(valor);
+    setResultado(data);
+  };
+
+  const handleDetect = (valor: string) => {
+    setBarcode(valor);
+    buscarProducto(valor);
+  };
+
   return (
     <div className="bg-gradient-to-br from-primary-900 via-primary to-secondary min-h-screen relative overflow-hidden grid">
       <div className="fixed inset-0 -z-10pointer-events-none">
@@ -177,19 +190,15 @@ export default function ScanBarcode() {
             <h1 className="text-primary font-primary text-2xl font-bold text-center">
               REGISTRAR PRODUCTO
             </h1>
-            <div
-              ref={videoRef}
-              className="bg-black max-w-[320px] h-52 rounded-2xl overflow-hidden shadow-lg "
-            >
-              {!barcode && <div></div>}
+            <div className="bg-black max-w-[300px] h-50 rounded-2xl overflow-hidden shadow-lg ">
+              <BarcodeScanner onDetect={handleDetect} />
             </div>
             <div className="flex items-center gap-2 mt-1 border rounded-lg px-2 border-black w-full">
               <Barcode size={20} />
               <input
                 type="number"
                 placeholder="Ingresar Código"
-                value={manualCode}
-                defaultValue={barcode}
+                value={barcode}
                 onChange={(e) => setManualCode(e.target.value)}
                 className="bg-transparent outline-none text-black placeholder-gray-400 flex-1 py-2"
               />
