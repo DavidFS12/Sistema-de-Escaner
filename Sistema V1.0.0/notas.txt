@@ -1,6 +1,0 @@
-para ejecutar en mobile
-
-python -m http.server 8000 --bind 0.0.0.0
-
-https
-ngrok http 8000
