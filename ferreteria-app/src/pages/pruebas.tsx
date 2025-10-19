@@ -1,16 +1,10 @@
 import BarcodeScanner from "../components/BarcodeScanner";
 
-function EscanearProducto() {
-  const handleResult = (codigo: string) => {
-    console.log("Código detectado:", codigo);
-    // Aquí llamas tu función para buscar el producto en Firebase
+export default function EscanearProducto() {
+  const handleDetect = (value) => {
+    alert("Producto detectado: " + value);
+    // Aquí puedes hacer fetch o registrar el producto en tu backend
   };
 
-  return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <BarcodeScanner onResult={handleResult} />
-    </div>
-  );
+  return <BarcodeScanner onDetect={handleDetect} />;
 }
-
-export default EscanearProducto;
