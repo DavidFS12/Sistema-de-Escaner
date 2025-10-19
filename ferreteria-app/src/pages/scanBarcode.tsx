@@ -1,5 +1,4 @@
-import { useRef, useState, useEffect } from "react";
-import * as Quagga from "quagga";
+import { useState, useEffect } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
@@ -19,21 +18,27 @@ interface Product {
 }
 
 export default function ScanBarcode() {
-  const [recommendations, setRecommendations] = useState<Product[]>([]);
-  const [barcode, setBarcode] = useState<string>("");
+  const [barcode, setBarcode] = useState("");
+  const [manualCode, setManualCode] = useState("");
   const [product, setProduct] = useState<Product | null>(null);
+  const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
-  const [manualCode, setManualCode] = useState("");
-  const [resultado, setResultado] = useState<any>(null);
-  const videoRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  // 🔍 Buscar producto al detectar o ingresar código
+  useEffect(() => {
+    if (!barcode) return;
+    fetchProduct(barcode);
+  }, [barcode]);
+
+  // 🔁 Obtener productos recomendados
   useEffect(() => {
     if (product) fetchRecommendations();
   }, [product]);
 
-  async function getAllProductsFromDB(): Promise<Product[]> {
+  // 🧠 Obtener todos los productos
+  async function getAllProducts(): Promise<Product[]> {
     const snapshot = await getDocs(collection(db, "products"));
     return snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -41,94 +46,14 @@ export default function ScanBarcode() {
     }));
   }
 
-  async function fetchRecommendations() {
-    const allProducts = await getAllProductsFromDB();
-    const recs = getProductRecommendations(product!, allProducts);
-    setRecommendations(recs);
-  }
-
-  useEffect(() => {
-    if (!videoRef.current) return;
-
-    let initialized = false;
-    let detections: Record<string, number> = {};
-    let lastDetected = "";
-
-    const onDetected = (data: any) => {
-      const code = data?.codeResult?.code;
-      if (!code) return;
-
-      detections[code] = (detections[code] || 0) + 1;
-
-      // Confirmar solo si se detecta 3 veces seguidas el mismo código
-      if (detections[code] >= 3 && code !== lastDetected) {
-        console.log("✅ Código confirmado:", code);
-        lastDetected = code;
-        setBarcode(code);
-        Quagga.stop();
-        initialized = false;
-      }
-    };
-
-    try {
-      Quagga.init(
-        {
-          inputStream: {
-            type: "LiveStream",
-            target: videoRef.current,
-            constraints: { facingMode: "environment" },
-          },
-          decoder: {
-            readers: [
-              "ean_reader",
-              "ean_8_reader",
-              "upc_reader",
-              "upc_e_reader",
-              "code_128_reader",
-            ],
-          },
-          locate: true,
-        },
-        (err: any) => {
-          if (err) {
-            console.error("❌ Error al iniciar cámara:", err);
-            return;
-          }
-          Quagga.onDetected(onDetected);
-          Quagga.start();
-          initialized = true;
-          console.log("📸 Cámara lista, escaneando...");
-        }
-      );
-    } catch (err) {
-      console.error("Error inicializando Quagga:", err);
-    }
-
-    return () => {
-      try {
-        Quagga.offDetected(onDetected);
-        Quagga.stop();
-      } catch (err) {
-        console.warn("Error en cleanup de Quagga:", err);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!barcode) return;
-    fetchProduct(barcode);
-  }, [barcode]);
-
-  const fetchProduct = async (codigo: string) => {
+  // 🔍 Buscar producto por código de barras
+  async function fetchProduct(code: string) {
     setLoading(true);
     setNotFound(false);
     setProduct(null);
 
     try {
-      const q = query(
-        collection(db, "products"),
-        where("barcode", "==", codigo)
-      );
+      const q = query(collection(db, "products"), where("barcode", "==", code));
       const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {
@@ -143,29 +68,32 @@ export default function ScanBarcode() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
+  // 🧠 Obtener recomendaciones
+  async function fetchRecommendations() {
+    const allProducts = await getAllProducts();
+    const recs = getProductRecommendations(product!, allProducts);
+    setRecommendations(recs);
+  }
+
+  // 🔘 Búsqueda manual
   const handleManualSearch = () => {
-    if (manualCode.trim() === "") return;
-    setBarcode(manualCode.trim());
+    if (manualCode.trim()) setBarcode(manualCode.trim());
   };
 
+  // ➕ Registrar producto nuevo
   const handleRegister = () => navigate(`/registrar?barcode=${barcode}`);
 
-  const buscarProducto = async (valor: string) => {
-    console.log("Codigo: ", valor);
-    const data = await fetchProduct(valor);
-    setResultado(data);
-  };
-
-  const handleDetect = (valor: string) => {
-    setBarcode(valor);
-    buscarProducto(valor);
+  // 📸 Callback del escáner
+  const handleDetect = (code: string) => {
+    setBarcode(code);
   };
 
   return (
     <div className="bg-gradient-to-br from-primary-900 via-primary to-secondary min-h-screen relative overflow-hidden grid">
-      <div className="fixed inset-0 -z-10pointer-events-none">
+      {/* 🔮 Fondo animado */}
+      <div className="fixed inset-0 -z-10 pointer-events-none">
         <LiquidEther
           colors={["#2818FF", "#5A8BFF", "#FFF14D", "#131753"]}
           mouseForce={20}
@@ -176,7 +104,7 @@ export default function ScanBarcode() {
           iterationsPoisson={32}
           resolution={0.5}
           isBounce={false}
-          autoDemo={true}
+          autoDemo
           autoSpeed={0.5}
           autoIntensity={2.2}
           takeoverDuration={0.1}
@@ -184,33 +112,39 @@ export default function ScanBarcode() {
           autoRampDuration={0.6}
         />
       </div>
+
+      {/* 🧱 Contenido principal */}
       <div className="flex flex-col items-center justify-center m-5 relative">
         <div className="bg-white rounded-2xl flex flex-col items-center justify-center max-w-[390px] px-5 py-10 gap-5">
-          <div className="flex flex-col gap-5 w-full items-center">
-            <h1 className="text-primary font-primary text-2xl font-bold text-center">
-              REGISTRAR PRODUCTO
-            </h1>
-            <div className="bg-black max-w-[300px] h-50 rounded-2xl overflow-hidden shadow-lg ">
-              <BarcodeScanner onDetect={handleDetect} />
-            </div>
-            <div className="flex items-center gap-2 mt-1 border rounded-lg px-2 border-black w-full">
-              <Barcode size={20} />
-              <input
-                type="number"
-                placeholder="Ingresar Código"
-                value={barcode}
-                onChange={(e) => setManualCode(e.target.value)}
-                className="bg-transparent outline-none text-black placeholder-gray-400 flex-1 py-2"
-              />
-            </div>
-            <button
-              onClick={handleManualSearch}
-              className="w-full relative p-4 font-semibold text-white rounded-lg bg-gradient-to-r from-primary-500 to-primary-700 hover:from-primary hover:to-primary-900 hover:translate-y-[-2px] hover:shadow-2xl"
-            >
-              <span className="relative z-10">Buscar</span>
-            </button>
+          <h1 className="text-primary font-primary text-2xl font-bold text-center">
+            ESCANEAR O BUSCAR PRODUCTO
+          </h1>
+
+          {/* 📷 Escáner de código */}
+          <div className="bg-black max-w-[300px] h-50 rounded-2xl overflow-hidden shadow-lg">
+            <BarcodeScanner onDetect={handleDetect} />
           </div>
-          {/* Resultado */}
+
+          {/* 🔢 Entrada manual */}
+          <div className="flex items-center gap-2 mt-1 border rounded-lg px-2 border-black w-full">
+            <Barcode size={20} />
+            <input
+              type="number"
+              placeholder="Ingresar Código"
+              value={manualCode}
+              onChange={(e) => setManualCode(e.target.value)}
+              className="bg-transparent outline-none text-black placeholder-gray-400 flex-1 py-2"
+            />
+          </div>
+
+          <button
+            onClick={handleManualSearch}
+            className="w-full relative p-4 font-semibold text-white rounded-lg bg-gradient-to-r from-primary-500 to-primary-700 hover:from-primary hover:to-primary-900 hover:translate-y-[-2px] hover:shadow-2xl"
+          >
+            Buscar
+          </button>
+
+          {/* 📦 Resultado */}
           {loading ? (
             <p className="text-primary">Buscando producto...</p>
           ) : product ? (
@@ -237,7 +171,8 @@ export default function ScanBarcode() {
                   </div>
                 </div>
               </div>
-              {/* Recomendaciones */}
+
+              {/* 🧩 Recomendaciones */}
               {recommendations.length > 0 && (
                 <div className="pt-5 w-full">
                   <h3 className="text-2xl font-bold text-center text-primary pb-2">
@@ -277,15 +212,17 @@ export default function ScanBarcode() {
               <p className="text-2xl font-bold text-center text-red-500 pb-2">
                 Producto no encontrado
               </p>
-              <p className="text-priamry font-bold mb-3">{barcode}</p>
+              <p className="text-primary font-bold mb-3">{barcode}</p>
               <button
                 onClick={handleRegister}
                 className="w-full relative p-4 font-semibold text-white rounded-lg bg-gradient-to-r from-primary-500 to-primary-700 hover:from-primary hover:to-primary-900 hover:translate-y-[-2px] hover:shadow-2xl mt-4"
               >
-                <span className="relative z-10">Registrar</span>
+                Registrar
               </button>
             </div>
           ) : null}
+
+          {/* 🔙 Botón Regresar */}
           <div className="w-full">
             <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-950">
               <GooeyButton

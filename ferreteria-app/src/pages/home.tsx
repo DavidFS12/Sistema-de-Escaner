@@ -115,8 +115,8 @@ export default function Home() {
             No hay productos registrados aún.
           </p>
         ) : (
-          <div className="flex flex-col gap-10 p-4 font-primary-400">
-            {/*
+          <div className="flex flex-col gap-10 p-4 font-primary-400 relative">
+            {/* 
             <h1 className="text-center text-primary text-4xl font-bold">
               Catálogo
             </h1>
@@ -146,7 +146,7 @@ export default function Home() {
                 </div>
               </div>
             ))}
-              */}
+            */}
           </div>
         )}
       </div>

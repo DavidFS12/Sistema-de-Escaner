@@ -69,7 +69,6 @@ export default function BarcodeScanner({ onDetect, className }: Props) {
       stream.getTracks().forEach((t) => t.stop());
     }
     if (video) {
-      // @ts-ignore
       video.srcObject = null;
     }
     setScanning(false);
@@ -80,7 +79,7 @@ export default function BarcodeScanner({ onDetect, className }: Props) {
       <div>
         <video
           ref={videoRef}
-          className="rounded-lg border border-gray-400 max-w-full"
+          className="rounded-lg max-w-full"
           autoPlay
           muted
           playsInline

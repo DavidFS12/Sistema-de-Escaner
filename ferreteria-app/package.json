@@ -11,6 +11,7 @@
     "css": "npx @tailwindcss/cli -i ./src/index.css -o ./src/tailwind.css --watch"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.1.0",
     "@gsap/react": "^2.1.2",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
